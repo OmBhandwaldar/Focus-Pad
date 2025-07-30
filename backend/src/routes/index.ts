@@ -74,6 +74,22 @@ router.post('/goals/custom', authMiddleware, async (req: AuthRequest, res: Respo
   res.json(data?.[0]);
 });
 
+// Get all purse balances of logged-in user
+router.get('/wallet/balance', authMiddleware, async (req: AuthRequest, res: Response) => {
+  const user_id = req.user!.id;
+
+  const { data, error } = await supabase
+    .from('wallets')
+    .select('base_purse, reward_purse, remorse_purse')
+    .eq('user_id', user_id)
+    .single();
+
+  if (error) return res.status(400).json({ error });
+
+  res.json(data);
+});
+
+
 // Get visible goals
 router.get('/goals', authMiddleware, async (req: AuthRequest, res: Response) => {
   const user_id = req.user!.id;
